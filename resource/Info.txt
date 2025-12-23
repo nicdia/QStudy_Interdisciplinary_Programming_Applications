@@ -1,0 +1,7 @@
+    time: Unix timestamp (nanoseconds precision) - Exact moment of lightning strike detection
+    lat: Latitude coordinate (-90 to 90) - Geographic location of strike
+    lon: Longitude coordinate (-180 to 180) - Geographic location of strike
+    region: Region identifier (1-14) - Geographic region classification
+    mds: Minimum Detectable Signal - Signal strength measurement
+    mc: Modal Count - Number of detected modes
+    gs: Ground Strike indicator - Whether strike reached ground (0 or 1)
