@@ -25,8 +25,7 @@ Visualisierung und Export der Ergebnisse.
 
 The following diagram illustrates the complete end-to-end data pipeline implemented in this project.
 
-```
-mermaid
+```mermaid
 flowchart TD
     A([Start])
 
