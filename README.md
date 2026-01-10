@@ -24,6 +24,8 @@ Visualisierung und Export der Ergebnisse.
 ## Workflow / Pipeline
 
 The following diagram illustrates the complete end-to-end data pipeline implemented in this project.
+> Hinweis: Aufgrund der Größe des Workflows kann das Diagramm im GitHub-Viewer standardmäßig minimiert dargestellt werden.  
+> Über das Zoom-/Expand-Symbol lässt sich der vollständige Workflow anzeigen.
 
 ```mermaid
 flowchart TD
