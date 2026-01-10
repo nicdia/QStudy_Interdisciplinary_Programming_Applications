@@ -8,7 +8,25 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 def print_basic_overview(df: pd.DataFrame, *, head_n: int = 5) -> None:
     """
-    Print basic structural information and a small preview of the dataset.
+    Gibt einen kompakten Überblick über den Datensatz aus.
+
+    Diese Hilfsfunktion dient als schneller Plausibilitäts-Check und gibt aus:
+    - Struktur und Datentypen des DataFrames (über ``df.info()``)
+    - Anzahl der Zeilen und Spalten
+    - Anzahl fehlender Werte pro Spalte
+    - Eine Vorschau der ersten Zeilen
+
+    Parameter
+    ---------
+    df:
+        Zu untersuchender DataFrame.
+    head_n:
+        Anzahl der Zeilen, die in der Vorschau angezeigt werden (Standard: 5).
+
+    Rückgabewert
+    ------------
+    None
+        Die Funktion gibt ausschließlich Informationen auf der Konsole aus.
     """
     print(df.info())
     print("\nData successfully loaded.")
@@ -23,7 +41,22 @@ def print_basic_overview(df: pd.DataFrame, *, head_n: int = 5) -> None:
 
 def print_uniques(df: pd.DataFrame) -> None:
     """
-    Print unique values for selected categorical or temporal columns if present.
+    Gibt eindeutige Werte ausgewählter Spalten aus.
+
+    Diese Funktion wird genutzt, um:
+    - die Abdeckung kategorialer Variablen (z. B. Regionen)
+    - sowie den zeitlichen Umfang (Jahre, Monate)
+    nach der Feature-Erzeugung schnell zu überprüfen.
+
+    Parameter
+    ---------
+    df:
+        Eingabe-DataFrame.
+
+    Rückgabewert
+    ------------
+    None
+        Die Funktion gibt ausschließlich Informationen auf der Konsole aus.
     """
     if "region" in df.columns:
         print("\nUnique values in column 'region':")
@@ -40,7 +73,20 @@ def print_uniques(df: pd.DataFrame) -> None:
 
 def print_time_range(df: pd.DataFrame) -> None:
     """
-    Print the minimum and maximum timestamps in the dataset.
+    Gibt den minimalen und maximalen Zeitstempel im Datensatz aus.
+
+    Parameter
+    ---------
+    df:
+        Eingabe-DataFrame mit einer ``time``-Spalte vom Typ ``datetime``.
+
+    Rückgabewert
+    ------------
+    None
+
+    Hinweise
+    --------
+    Falls keine ``time``-Spalte vorhanden ist, wird nichts ausgegeben.
     """
     if "time" not in df.columns:
         return
@@ -54,7 +100,27 @@ def print_time_range(df: pd.DataFrame) -> None:
 
 def print_time_granularity(df: pd.DataFrame) -> None:
     """
-    Print simple time coverage stats (unique days/months) to support claims about scope.
+    Gibt einfache Kennzahlen zur zeitlichen Abdeckung des Datensatzes aus.
+
+    Die Funktion ermittelt:
+    - Anzahl unterschiedlicher Tage
+    - Anzahl unterschiedlicher Monate
+
+    Diese Kennzahlen unterstützen Aussagen über den zeitlichen Umfang
+    des Datensatzes (z. B. „12 Tage über 2 Monate“).
+
+    Parameter
+    ---------
+    df:
+        Eingabe-DataFrame mit einer ``time``-Spalte vom Typ ``datetime``.
+
+    Rückgabewert
+    ------------
+    None
+
+    Hinweise
+    --------
+    Falls die ``time``-Spalte fehlt oder leer ist, erfolgt keine Ausgabe.
     """
     if "time" not in df.columns:
         return
@@ -73,10 +139,26 @@ def print_time_granularity(df: pd.DataFrame) -> None:
 
 def correlation_matrix(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Compute a correlation matrix for relevant numeric features.
+    Berechnet eine Pearson-Korrelationsmatrix für ausgewählte numerische Variablen.
+
+    Die Analyse beschränkt sich bewusst auf fachlich sinnvolle Merkmale
+    (räumlich, zeitlich und signalbezogen), um die Interpretierbarkeit
+    der Korrelationsmatrix zu gewährleisten.
+
+    Parameter
+    ---------
+    df:
+        Bereinigter und um Zeitfeatures erweiterter DataFrame.
+
+    Rückgabewert
+    ------------
+    pandas.DataFrame
+        Quadratische Korrelationsmatrix mit Werten zwischen -1 und 1.
+        Spalten, die im DataFrame nicht vorhanden sind, werden ignoriert.
     """
     cols = [
-        "lat", "lon", "region", "mds", "mcg", "month", "day", "hour", "minute", "second",
+        "lat", "lon", "region", "mds", "mcg",
+        "month", "day", "hour", "minute", "second",
     ]
     cols = [c for c in cols if c in df.columns]
     return df[cols].corr(numeric_only=True)
@@ -84,7 +166,31 @@ def correlation_matrix(df: pd.DataFrame) -> pd.DataFrame:
 
 def top_correlations(corr: pd.DataFrame, target: str, n: int = 5) -> pd.Series:
     """
-    Return the top n features with the strongest absolute correlation to the target.
+    Ermittelt die stärksten linearen Zusammenhänge mit einer Zielvariable.
+
+    Aus einer Korrelationsmatrix wird:
+    - die Zielspalte extrahiert,
+    - die Selbstkorrelation entfernt,
+    - nach dem Betrag der Korrelation sortiert (Vorzeichen bleibt erhalten),
+    - und die Top-n-Korrelationen zurückgegeben.
+
+    Parameter
+    ---------
+    corr:
+        Korrelationsmatrix (z. B. aus :func:`correlation_matrix`).
+    target:
+        Name der Zielvariable (muss in ``corr`` enthalten sein).
+    n:
+        Anzahl der stärksten Korrelationen (Standard: 5).
+
+    Rückgabewert
+    ------------
+    pandas.Series
+        Rangliste der Variablen mit stärkstem linearem Zusammenhang zur Zielvariable.
+
+    Hinweise
+    --------
+    Ist die Zielvariable nicht enthalten, wird eine leere Series zurückgegeben.
     """
     if target not in corr.columns:
         return pd.Series(dtype=float)
@@ -104,8 +210,45 @@ def linear_regression_mcg(
     one_hot_region: bool = True,
 ) -> dict:
     """
-    Fit a simple linear regression model to predict the target variable and return
-    evaluation metrics and coefficients (optionally one-hot encoding 'region').
+    Trainiert und evaluiert ein lineares Regressionsmodell zur Vorhersage der Blitzintensität.
+
+    Es wird ein einfaches ``LinearRegression``-Modell (scikit-learn) verwendet,
+    um die Zielvariable (Standard: ``mcg``) aus ausgewählten Einflussgrößen
+    vorherzusagen. Das Modell dient primär der explorativen Analyse.
+
+    Die Regionsvariable kann optional als kategoriales Merkmal per One-Hot-Encoding
+    behandelt werden (empfohlen), da Regions-IDs keine ordinalen Werte darstellen.
+
+    Parameter
+    ---------
+    df:
+        Bereinigter und feature-angereicherter DataFrame.
+    feature_cols:
+        Liste der zu verwendenden Feature-Spalten. Falls ``None``, wird
+        ein projektspezifischer Standardsatz genutzt.
+    target_col:
+        Zielvariable der Regression (Standard: ``"mcg"``).
+    test_size:
+        Anteil der Daten für den Testdatensatz (Standard: 0.2).
+    random_state:
+        Zufalls-Seed für reproduzierbare Ergebnisse (Standard: 42).
+    one_hot_region:
+        Falls True, wird ``region`` als kategoriale Variable one-hot-enkodiert.
+
+    Rückgabewert
+    ------------
+    dict
+        Enthält u. a.:
+        - Erfolgsstatus
+        - Modellparameter
+        - Evaluationsmetriken (MAE, RMSE, R²)
+        - Regressionskoeffizienten
+
+    Hinweise
+    --------
+    - Zeilen mit fehlenden Werten in Features oder Zielvariable werden entfernt.
+    - Bei zu wenigen verbleibenden Datenpunkten wird kein Modell trainiert.
+    - Das Modell ist bewusst einfach gehalten und nicht für produktive Vorhersagen gedacht.
     """
     if feature_cols is None:
         candidate = ["mds", "hour", "region", "lat", "lon", "month"]
@@ -126,7 +269,6 @@ def linear_regression_mcg(
     y = d[target_col]
 
     if one_hot_region and "region" in X.columns:
-        # Treat region as categorical, not ordinal
         X["region"] = X["region"].astype("category")
         X = pd.get_dummies(X, columns=["region"], drop_first=True)
 
@@ -163,7 +305,20 @@ def linear_regression_mcg(
 
 def print_regression_report(result: dict) -> None:
     """
-    Print a concise console report of the regression results.
+    Gibt einen kompakten Bericht zu den Regressionsergebnissen aus.
+
+    Parameter
+    ---------
+    result:
+        Ergebnis-Dictionary aus :func:`linear_regression_mcg`.
+
+    Rückgabewert
+    ------------
+    None
+
+    Hinweise
+    --------
+    Falls ``result["ok"]`` False ist, wird lediglich der Abbruchgrund ausgegeben.
     """
     if not result.get("ok", False):
         print("\n--- LINEAR REGRESSION ---")

@@ -1,46 +1,46 @@
 flowchart TD
     A([Start])
 
-    subgraph SETUP["Setup & Loading"]
-        B[Set paths and flags]
-        C[Ensure output directories]
-        D[Load raw CSV data]
-        E[Raw data overview]
+    subgraph SETUP["Setup & Datenimport"]
+        B[Pfad- und Konfigurationseinstellungen]
+        C[Ausgabeverzeichnisse erstellen]
+        D[Rohdaten aus CSV laden]
+        E[Überblick über Rohdaten]
     end
 
-    subgraph CLEANING["Cleaning & Feature Engineering"]
-        F[Clean and convert types]
-        G[Add time features]
-        H[Post-clean overview]
-        I[Time range and coverage]
-        J[Unique values check]
+    subgraph CLEANING["Datenbereinigung & Feature Engineering"]
+        F[Daten bereinigen und Typen konvertieren]
+        G[Zeitbasierte Features erzeugen]
+        H[Überblick nach Bereinigung]
+        I[Zeitraum und zeitliche Abdeckung]
+        J[Prüfung eindeutiger Werte]
     end
 
-    subgraph ANALYSIS["Exploratory Data Analysis"]
-        K[Correlation analysis]
-        L[Top correlations for mcg]
-        M[Export correlation matrix]
+    subgraph ANALYSIS["Explorative Datenanalyse"]
+        K[Korrelationsanalyse]
+        L[Stärkste Korrelationen mit mcg]
+        M[Korrelationsmatrix exportieren]
     end
 
-    subgraph MODEL["Modeling"]
-        N[Linear regression model]
-        O[Regression report]
-        P{Regression successful}
-        Q[Export regression coefficients]
-        R[Skip coefficient export]
+    subgraph MODEL["Modellierung"]
+        N[Lineares Regressionsmodell]
+        O[Regressionsbericht]
+        P{Regression erfolgreich?}
+        Q[Regressionskoeffizienten exportieren]
+        R[Export überspringen]
     end
 
-    subgraph OUTPUT["Visualization & Export"]
-        S[Export cleaned dataset]
-        T{Show plots}
-        U[Generate plots]
-        V[Skip showing plots]
-        W{Save plots}
-        X[Save figures to disk]
-        Y[Skip saving plots]
+    subgraph OUTPUT["Visualisierung & Export"]
+        S[Bereinigten Datensatz exportieren]
+        T{Plots anzeigen?}
+        U[Plots erzeugen]
+        V[Anzeige überspringen]
+        W{Plots speichern?}
+        X[Grafiken auf Festplatte speichern]
+        Y[Speichern überspringen]
     end
 
-    Z([End])
+    Z([Ende])
 
     A --> B
     B --> C
@@ -57,16 +57,16 @@ flowchart TD
     M --> N
     N --> O
     O --> P
-    P -- Yes --> Q
-    P -- No --> R
+    P -- Ja --> Q
+    P -- Nein --> R
     Q --> S
     R --> S
     S --> T
-    T -- Yes --> U
-    T -- No --> V
+    T -- Ja --> U
+    T -- Nein --> V
     U --> W
     V --> W
-    W -- Yes --> X
-    W -- No --> Y
+    W -- Ja --> X
+    W -- Nein --> Y
     X --> Z
     Y --> Z
