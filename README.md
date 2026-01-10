@@ -150,8 +150,3 @@ Beim Standardlauf werden u. a. erzeugt:
 - `output/regression_coefficients.csv`
 - `output/figures/*.png`
 
-## Hinweise zur Nutzung
-
-- Für große Datensätze sind Stichproben in den Kartenplots aktiv (siehe `viz.py`).
-- Falls Visualisierungen interaktiv angezeigt werden sollen, setze `SHOW_PLOTS = True`
-  in `src/main.py`.
