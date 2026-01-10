@@ -1,2 +1,4 @@
 resource/*.csv
 output/
+.venv/
+venv/

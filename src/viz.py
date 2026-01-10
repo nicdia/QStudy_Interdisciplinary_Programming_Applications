@@ -1,4 +1,3 @@
-# src/viz.py
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
@@ -39,9 +38,7 @@ def plot_strikes_by_hour(df, save_path: str | None = None) -> None:
     Plot the number of lightning strikes by hour of day.
     """
     plt.figure(figsize=(10, 6))
-    df.groupby("hour").size().reindex(range(24), fill_value=0).plot(
-        kind="line", marker="o"
-    )
+    df.groupby("hour").size().reindex(range(24), fill_value=0).plot(kind="line", marker="o")
     plt.title("Lightning strikes by hour of day")
     plt.xlabel("Hour")
     plt.ylabel("Count")
@@ -50,24 +47,32 @@ def plot_strikes_by_hour(df, save_path: str | None = None) -> None:
     _save_or_show(save_path)
 
 
-def plot_geo_intensity(df, save_path: str | None = None) -> None:
+def plot_geo_intensity(
+    df,
+    save_path: str | None = None,
+    *,
+    sample_n: int = 200_000,
+) -> None:
     """
-    Plot geographic distribution of lightning strikes colored by intensity.
+    Plot geographic distribution of lightning strikes colored by intensity (sampled for performance).
     """
+    plot_df = df
+    if sample_n is not None and len(df) > sample_n:
+        plot_df = df.sample(sample_n, random_state=42)
+
     plt.figure(figsize=(10, 8))
-    sns.scatterplot(
-        x="lon",
-        y="lat",
-        data=df,
-        hue="mcg",
-        size="mcg",
-        alpha=0.3,
-        palette="viridis",
-        legend=False,
+    sc = plt.scatter(
+        plot_df["lon"],
+        plot_df["lat"],
+        c=plot_df["mcg"],
+        s=2,
+        alpha=0.25,
     )
     plt.title("Geographic distribution of lightning intensity (mcg)")
     plt.xlabel("Longitude")
     plt.ylabel("Latitude")
+    cbar = plt.colorbar(sc, shrink=0.8)
+    cbar.set_label("Lightning intensity (mcg)")
     _save_or_show(save_path)
 
 
@@ -79,7 +84,7 @@ def plot_geo_intensity_map(
     global_view: bool = True,
 ) -> None:
     """
-    Plot lightning strikes on a geographic map with intensity coloring.
+    Plot lightning strikes on a geographic map with intensity coloring (sampled for performance).
     """
     fig = plt.figure(figsize=(12, 8))
     ax = plt.axes(projection=ccrs.PlateCarree())
@@ -116,7 +121,6 @@ def plot_geo_intensity_map(
         plot_df["lat"],
         c=plot_df["mcg"],
         s=2,
-        cmap="viridis",
         alpha=0.25,
         transform=ccrs.PlateCarree(),
         zorder=2,
@@ -157,7 +161,7 @@ def plot_corr_heatmap(corr, save_path: str | None = None) -> None:
 
 def plot_mcg_by_region(df, save_path: str | None = None) -> None:
     """
-    Plot lightning intensity by region using boxplots.
+    Plot lightning intensity by region using boxplots (may be slow on huge datasets).
     """
     plt.figure(figsize=(10, 5))
     sns.boxplot(x="region", y="mcg", data=df)
@@ -169,7 +173,7 @@ def plot_mcg_by_region(df, save_path: str | None = None) -> None:
 
 def plot_mcg_by_hour(df, save_path: str | None = None) -> None:
     """
-    Plot lightning intensity by hour using boxplots.
+    Plot lightning intensity by hour using boxplots (may be slow on huge datasets).
     """
     plt.figure(figsize=(12, 5))
     sns.boxplot(x="hour", y="mcg", data=df)
