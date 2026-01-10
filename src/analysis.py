@@ -76,8 +76,7 @@ def correlation_matrix(df: pd.DataFrame) -> pd.DataFrame:
     Compute a correlation matrix for relevant numeric features.
     """
     cols = [
-        "lat", "lon", "region", "mds", "mcg",
-        "year", "month", "day", "hour", "minute", "second",
+        "lat", "lon", "region", "mds", "mcg", "month", "day", "hour", "minute", "second",
     ]
     cols = [c for c in cols if c in df.columns]
     return df[cols].corr(numeric_only=True)
