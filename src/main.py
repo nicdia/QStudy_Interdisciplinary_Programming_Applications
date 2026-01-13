@@ -26,7 +26,7 @@ def main() -> None:
     file_path = "resource/lightning_strikes.csv"
 
     # Toggle behavior
-    SHOW_PLOTS = False
+    SHOW_PLOTS = True
     SAVE_PLOTS = True
 
     ensure_output_dirs("output")

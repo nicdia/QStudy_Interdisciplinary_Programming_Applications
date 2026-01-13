@@ -17,7 +17,7 @@ Visualisierung und Export der Ergebnisse.
     ├── main.py                # Einstiegspunkt: gesamter Pipeline-Run
     ├── io_data.py             # Datenimport/-export
     ├── cleaning.py            # Datenbereinigung
-    ├── analysis.py            # Analyse + lineare Regression
+    ├── analysis.py            # Analyse 
     ├── viz.py                 # Visualisierungen (Plots & Karten)
 ```
 
@@ -32,74 +32,44 @@ flowchart TD
     A([Start])
 
     subgraph SETUP["Setup & Datenimport"]
-        B[Pfad- und Konfigurationseinstellungen]
-        C[Ausgabeverzeichnisse erstellen]
+        B[Pfad & Flags setzen]
+        C[Output-Verzeichnisse erstellen]
         D[Rohdaten aus CSV laden]
-        E[Überblick über Rohdaten]
+        E[RAW Overview ausgeben]
     end
 
     subgraph CLEANING["Datenbereinigung & Feature Engineering"]
-        F[Daten bereinigen und Typen konvertieren]
-        G[Zeitbasierte Features erzeugen]
-        H[Überblick nach Bereinigung]
-        I[Zeitraum und zeitliche Abdeckung]
-        J[Prüfung eindeutiger Werte]
+        F[Daten bereinigen & Typen konvertieren]
+        G[Zeitfeatures erzeugen]
+        H[Overview nach Cleaning]
+        I[Zeitbereich ausgeben]
+        J[Zeitabdeckung berechnen]
+        K[Eindeutige Werte prüfen]
     end
 
     subgraph ANALYSIS["Explorative Datenanalyse"]
-        K[Korrelationsanalyse]
-        L[Stärkste Korrelationen mit mcg]
-        M[Korrelationsmatrix exportieren]
+        L[Korrelationsmatrix berechnen]
+        M[Top-Korrelationen mit mcg]
+        N[Korrelationsmatrix exportieren]
     end
 
-    subgraph MODEL["Modellierung"]
-        N[Lineares Regressionsmodell]
-        O[Regressionsbericht]
-        P{Regression erfolgreich?}
-        Q[Regressionskoeffizienten exportieren]
-        R[Export überspringen]
+    subgraph VIS["Visualisierung"]
+        O{Plots anzeigen}
+        O --> O1[Balkendiagramm: Anzahl Strikes pro Region]
+        O --> O2[Liniendiagramm: Anzahl Strikes nach Stunde 0-23]
+        O --> O3[Karte: Geo-Scatter lon/lat, Farbe = mcg, optional Sampling]
+        O --> O4[Histogramm: Verteilung mcg, bins=50, KDE]
+        O --> O5[Heatmap: Korrelationsmatrix]
+        O --> O6[Boxplot: mcg-Verteilung nach Region]
     end
 
-    subgraph OUTPUT["Visualisierung & Export"]
-        S[Bereinigten Datensatz exportieren]
-        T{Plots anzeigen?}
-        U[Plots erzeugen]
-        V[Anzeige überspringen]
-        W{Plots speichern?}
-        X[Grafiken auf Festplatte speichern]
-        Y[Speichern überspringen]
-    end
-
+    P[Clean Dataset exportieren]
     Z([Ende])
 
-    A --> B
-    B --> C
-    C --> D
-    D --> E
-    E --> F
-    F --> G
-    G --> H
-    H --> I
-    I --> J
-    J --> K
-    K --> L
-    L --> M
-    M --> N
-    N --> O
-    O --> P
-    P -- Ja --> Q
-    P -- Nein --> R
-    Q --> S
-    R --> S
-    S --> T
-    T -- Ja --> U
-    T -- Nein --> V
-    U --> W
-    V --> W
-    W -- Ja --> X
-    W -- Nein --> Y
-    X --> Z
-    Y --> Z
+    A --> B --> C --> D --> E
+    E --> F --> G --> H --> I --> J --> K
+    K --> L --> M --> N --> P
+    P --> O --> Z
 ```
 
 ## Datenquelle
@@ -150,3 +120,12 @@ Beim Standardlauf werden u. a. erzeugt:
 - `output/regression_coefficients.csv`
 - `output/figures/*.png`
 
+## KI-Deklaration
+
+Im Rahmen dieses Projekts wurde Künstliche Intelligenz unterstützend und beratend eingesetzt.
+Die Nutzung umfasste insbesondere:
+
+	•	Beratung bei der Konzeption des Workflows und der Pipeline-Struktur
+	•	Unterstützung bei der Formulierung von Code-Dokumentation
+	•	Hilfestellung bei Fehlersuche, Codekorrektur und Refactoring
+	•	Diskussion und Einordnung analytischer Schritte (z. B. Korrelationsanalyse)
