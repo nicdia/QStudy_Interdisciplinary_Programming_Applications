@@ -55,12 +55,12 @@ flowchart TD
 
     subgraph VIS["Visualisierung"]
         O{Plots anzeigen}
-        O --> O1[Balkendiagramm: Anzahl Strikes pro Region]
-        O --> O2[Liniendiagramm: Anzahl Strikes nach Stunde 0-23]
-        O --> O3[Karte: Geo-Scatter lon/lat, Farbe = mcg, optional Sampling]
-        O --> O4[Histogramm: Verteilung mcg, bins=50, KDE]
+        O --> O1[Balkendiagramm: Blitzeinschläge pro Region]
+        O --> O2[Liniendiagramm: Blitzeinschläge nach Tagesstunde]
+        O --> O3[Karte: Geografische Verteilung der Blitze]
+        O --> O4[Histogramm: Verteilung der Blitzintensität mcg]
         O --> O5[Heatmap: Korrelationsmatrix]
-        O --> O6[Boxplot: mcg-Verteilung nach Region]
+        O --> O6[Boxplot: Blitzintensität mcg nach Region]
     end
 
     P[Clean Dataset exportieren]
