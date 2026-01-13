@@ -7,18 +7,14 @@ from analysis import (
     print_time_granularity,
     correlation_matrix,
     top_correlations,
-    linear_regression_mcg,
-    print_regression_report,
 )
 from viz import (
     plot_strikes_per_region,
     plot_strikes_by_hour,
-    plot_geo_intensity,
     plot_geo_intensity_map,
     plot_intensity_hist,
     plot_corr_heatmap,
     plot_mcg_by_region,
-    plot_mcg_by_hour,
 )
 
 
@@ -58,34 +54,23 @@ def main() -> None:
     corr.to_csv("output/correlation_matrix.csv")
     print("\nExported correlation matrix to: output/correlation_matrix.csv")
 
-    reg_result = linear_regression_mcg(df, one_hot_region=True)
-    print_regression_report(reg_result)
-
-    if reg_result.get("ok"):
-        reg_result["coefficients"].to_csv("output/regression_coefficients.csv")
-        print("Exported regression coefficients to: output/regression_coefficients.csv")
-
     export_clean_data(df, "output/lightning_strikes_clean.csv")
 
     if SHOW_PLOTS:
         plot_strikes_per_region(df)
         plot_strikes_by_hour(df)
-        plot_geo_intensity(df)
         plot_geo_intensity_map(df)
         plot_intensity_hist(df)
         plot_corr_heatmap(corr)
         plot_mcg_by_region(df)
-        plot_mcg_by_hour(df)
 
     if SAVE_PLOTS:
         plot_strikes_per_region(df, "output/figures/region_bar.png")
         plot_strikes_by_hour(df, "output/figures/hour_line.png")
-        plot_geo_intensity(df, "output/figures/geo_intensity.png")
         plot_geo_intensity_map(df, "output/figures/geo_intensity_map.png")
         plot_intensity_hist(df, "output/figures/mcg_hist.png")
         plot_corr_heatmap(corr, "output/figures/corr_heatmap.png")
         plot_mcg_by_region(df, "output/figures/mcg_by_region_box.png")
-        plot_mcg_by_hour(df, "output/figures/mcg_by_hour_box.png")
 
 
 if __name__ == "__main__":

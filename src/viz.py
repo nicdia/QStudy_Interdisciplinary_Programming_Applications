@@ -96,52 +96,6 @@ def plot_strikes_by_hour(df, save_path: str | None = None) -> None:
     _save_or_show(save_path)
 
 
-def plot_geo_intensity(
-    df,
-    save_path: str | None = None,
-    *,
-    sample_n: int = 200_000,
-) -> None:
-    """
-    Visualisiert die geografische Verteilung der Blitzintensität als Streudiagramm.
-
-    Jeder Punkt entspricht einem Blitzeinschlag, eingefärbt nach ``mcg``
-    (Blitzintensität). Für sehr große Datensätze wird optional eine Stichprobe
-    gezogen, um die Performance zu verbessern.
-
-    Parameter
-    ---------
-    df:
-        Bereinigter DataFrame mit ``lat``, ``lon`` und ``mcg``.
-    save_path:
-        Optionaler Speicherpfad für die Grafik.
-    sample_n:
-        Maximale Anzahl zufällig gezogener Datenpunkte (Standard: 200.000).
-
-    Rückgabewert
-    ------------
-    None
-    """
-    plot_df = df
-    if sample_n is not None and len(df) > sample_n:
-        plot_df = df.sample(sample_n, random_state=42)
-
-    plt.figure(figsize=(10, 8))
-    sc = plt.scatter(
-        plot_df["lon"],
-        plot_df["lat"],
-        c=plot_df["mcg"],
-        s=2,
-        alpha=0.25,
-    )
-    plt.title("Geographic distribution of lightning intensity (mcg)")
-    plt.xlabel("Longitude")
-    plt.ylabel("Latitude")
-    cbar = plt.colorbar(sc, shrink=0.8)
-    cbar.set_label("Lightning intensity (mcg)")
-    _save_or_show(save_path)
-
-
 def plot_geo_intensity_map(
     df,
     save_path: str | None = None,
@@ -297,31 +251,5 @@ def plot_mcg_by_region(df, save_path: str | None = None) -> None:
     sns.boxplot(x="region", y="mcg", data=df)
     plt.title("Lightning intensity (mcg) by region")
     plt.xlabel("Region")
-    plt.ylabel("mcg")
-    _save_or_show(save_path)
-
-
-def plot_mcg_by_hour(df, save_path: str | None = None) -> None:
-    """
-    Visualisiert die Blitzintensität nach Tagesstunde mittels Boxplots.
-
-    Diese Darstellung beantwortet die Frage, ob sich Intensität und
-    Streuung der Blitze im Tagesverlauf systematisch verändern.
-
-    Parameter
-    ---------
-    df:
-        Bereinigter DataFrame mit ``hour`` und ``mcg``.
-    save_path:
-        Optionaler Speicherpfad für die Grafik.
-
-    Rückgabewert
-    ------------
-    None
-    """
-    plt.figure(figsize=(12, 5))
-    sns.boxplot(x="hour", y="mcg", data=df)
-    plt.title("Lightning intensity (mcg) by hour")
-    plt.xlabel("Hour")
     plt.ylabel("mcg")
     _save_or_show(save_path)
