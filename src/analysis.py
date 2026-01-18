@@ -142,8 +142,8 @@ def correlation_matrix(df: pd.DataFrame) -> pd.DataFrame:
     Berechnet eine Pearson-Korrelationsmatrix für ausgewählte numerische Variablen.
 
     Die Analyse beschränkt sich bewusst auf fachlich sinnvolle Merkmale
-    (räumlich, zeitlich und signalbezogen), um die Interpretierbarkeit
-    der Korrelationsmatrix zu gewährleisten.
+    (räumlich, zeitlich und Qualitäts-/Signalparameter), um die
+    Interpretierbarkeit der Korrelationsmatrix zu gewährleisten.
 
     Parameter
     ---------
@@ -179,7 +179,7 @@ def top_correlations(corr: pd.DataFrame, target: str, n: int = 5) -> pd.Series:
     corr:
         Korrelationsmatrix (z. B. aus :func:`correlation_matrix`).
     target:
-        Name der Zielvariable (muss in ``corr`` enthalten sein).
+        Name der Zielvariable (muss in ``corr`` enthalten sein), z. B. ``"mcg"``.
     n:
         Anzahl der stärksten Korrelationen (Standard: 5).
 

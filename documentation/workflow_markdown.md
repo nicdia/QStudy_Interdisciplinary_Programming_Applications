@@ -19,18 +19,18 @@ flowchart TD
 
     subgraph ANALYSIS["Explorative Datenanalyse"]
         L[Korrelationsmatrix berechnen]
-        M[Top-Korrelationen mit mcg]
+        M[Top-Korrelationen mit MCG - Ortungsqualitaet]
         N[Korrelationsmatrix exportieren]
     end
 
     subgraph VIS["Visualisierung"]
         O{Plots anzeigen}
-        O --> O1[Balkendiagramm: Blitzeinschläge pro Region]
-        O --> O2[Liniendiagramm: Blitzeinschläge nach Tagesstunde]
+        O --> O1[Balkendiagramm: Anzahl Blitze pro Region]
+        O --> O2[Liniendiagramm: Anzahl Blitze nach Tagesstunde]
         O --> O3[Karte: Geografische Verteilung der Blitze]
-        O --> O4[Histogramm: Verteilung der Blitzintensität mcg]
+        O --> O4[Histogramm: Verteilung MCG - Ortungsqualitaet]
         O --> O5[Heatmap: Korrelationsmatrix]
-        O --> O6[Boxplot: Blitzintensität mcg nach Region]
+        O --> O6[Boxplot: MCG - Ortungsqualitaet nach Region]
     end
 
     P[Clean Dataset exportieren]

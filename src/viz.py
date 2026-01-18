@@ -10,13 +10,8 @@ def _save_or_show(save_path: str | None) -> None:
     """
     Speichert die aktuell aktive Matplotlib-Figur oder zeigt sie an.
 
-    Falls ein Speicherpfad angegeben ist, wird:
-    - das Zielverzeichnis (inkl. Elternverzeichnisse) erstellt,
-    - das Layout optimiert,
-    - die Figur als PNG-Datei gespeichert,
-    - und anschließend geschlossen.
-
-    Falls kein Speicherpfad angegeben ist, wird die Figur direkt angezeigt.
+    Falls ``save_path`` gesetzt ist, wird die Grafik als Datei gespeichert.
+    Andernfalls wird die Grafik interaktiv angezeigt.
 
     Parameter
     ---------
@@ -27,23 +22,21 @@ def _save_or_show(save_path: str | None) -> None:
     ------------
     None
     """
+    plt.tight_layout()
+
     if save_path:
         Path(save_path).parent.mkdir(parents=True, exist_ok=True)
-        plt.tight_layout()
         plt.savefig(save_path, dpi=150)
         plt.close()
     else:
-        plt.tight_layout()
         plt.show()
 
 
 def plot_strikes_per_region(df, save_path: str | None = None) -> None:
     """
-    Visualisiert die Anzahl der Blitzeinschläge pro Region.
+    Visualisiert die Anzahl der detektierten Blitze pro Region.
 
-    Erstellt ein Balkendiagramm auf Basis der Häufigkeit der ``region``-IDs.
-    Die Darstellung beantwortet die Frage, in welchen Regionen besonders viele
-    Blitze detektiert wurden.
+    Erstellt ein Balkendiagramm der Ereignishäufigkeit je ``region``-ID.
 
     Parameter
     ---------
@@ -59,19 +52,18 @@ def plot_strikes_per_region(df, save_path: str | None = None) -> None:
     plt.figure(figsize=(8, 5))
     df["region"].value_counts().sort_index().plot(kind="bar")
     plt.title("Lightning strikes per region")
-    plt.ylabel("Count")
     plt.xlabel("Region")
+    plt.ylabel("Count")
     plt.xticks(rotation=0)
     _save_or_show(save_path)
 
 
 def plot_strikes_by_hour(df, save_path: str | None = None) -> None:
     """
-    Visualisiert die Anzahl der Blitzeinschläge nach Tagesstunde.
+    Visualisiert die Anzahl der detektierten Blitze nach Tagesstunde.
 
-    Das Liniendiagramm zeigt die zeitliche Verteilung der Ereignisse über
-    24 Stunden und beantwortet die Frage, zu welchen Tageszeiten Blitze
-    besonders häufig auftreten.
+    Erstellt ein Liniendiagramm der Ereignishäufigkeit je Stunde (0–23).
+    Fehlende Stunden werden mit 0 aufgefüllt.
 
     Parameter
     ---------
@@ -85,8 +77,11 @@ def plot_strikes_by_hour(df, save_path: str | None = None) -> None:
     None
     """
     plt.figure(figsize=(10, 6))
-    df.groupby("hour").size().reindex(range(24), fill_value=0).plot(
-        kind="line", marker="o"
+    (
+        df.groupby("hour")
+        .size()
+        .reindex(range(24), fill_value=0)
+        .plot(kind="line", marker="o")
     )
     plt.title("Lightning strikes by hour of day")
     plt.xlabel("Hour")
@@ -104,12 +99,10 @@ def plot_geo_intensity_map(
     global_view: bool = True,
 ) -> None:
     """
-    Visualisiert Blitzeinschläge auf einer geografischen Karte mit Basemap.
+    Visualisiert Blitzeinschläge auf einer Karte (Punktdaten + Kartenelemente).
 
-    Die Funktion kombiniert Punktdaten mit kartografischen Elementen
-    (Land, Ozeane, Grenzen) und stellt die Blitzintensität farbcodiert dar.
-    Optional kann eine globale Ansicht oder ein automatischer Zoom auf
-    den Datenbereich gewählt werden.
+    Die Ereignisse werden als Punkte in geografischen Koordinaten dargestellt.
+    Die Farbskala kodiert den Wert der Spalte ``mcg``.
 
     Parameter
     ---------
@@ -119,8 +112,10 @@ def plot_geo_intensity_map(
         Optionaler Speicherpfad für die Grafik.
     sample_n:
         Maximale Anzahl zufällig gezogener Datenpunkte zur Performance-Optimierung.
+        Wenn ``df`` größer ist als ``sample_n``, wird eine Stichprobe gezogen.
     global_view:
-        Falls True, wird eine globale Kartenansicht verwendet.
+        Falls True, wird eine globale Kartenansicht verwendet. Andernfalls wird
+        automatisch auf den Datenbereich gezoomt.
 
     Rückgabewert
     ------------
@@ -167,7 +162,7 @@ def plot_geo_intensity_map(
     )
 
     cbar = plt.colorbar(sc, ax=ax, shrink=0.7, pad=0.02)
-    cbar.set_label("Lightning intensity (mcg)")
+    cbar.set_label("mcg")
 
     title = "Geographic distribution of lightning strikes"
     if sample_n is not None and len(df) > sample_n:
@@ -179,11 +174,10 @@ def plot_geo_intensity_map(
 
 def plot_intensity_hist(df, save_path: str | None = None) -> None:
     """
-    Visualisiert die Verteilung der Blitzintensität als Histogramm.
+    Visualisiert die Verteilung von ``mcg`` als Histogramm.
 
-    Das Histogramm (inkl. optionaler Dichtekurve) zeigt, wie häufig
-    bestimmte ``mcg``-Werte auftreten und gibt Aufschluss über
-    Schiefe und Streuung der Intensitätsverteilung.
+    Ergänzend wird eine Dichtekurve (KDE) angezeigt, um die Verteilung
+    glatter interpretieren zu können.
 
     Parameter
     ---------
@@ -198,7 +192,7 @@ def plot_intensity_hist(df, save_path: str | None = None) -> None:
     """
     plt.figure(figsize=(8, 5))
     sns.histplot(df["mcg"], bins=50, kde=True)
-    plt.title("Distribution of lightning intensity (mcg)")
+    plt.title("Distribution of mcg")
     plt.xlabel("mcg")
     plt.ylabel("Frequency")
     _save_or_show(save_path)
@@ -208,13 +202,10 @@ def plot_corr_heatmap(corr, save_path: str | None = None) -> None:
     """
     Visualisiert eine Korrelationsmatrix als Heatmap.
 
-    Die Farbskala ermöglicht eine schnelle Identifikation
-    starker positiver oder negativer Zusammenhänge zwischen Variablen.
-
     Parameter
     ---------
     corr:
-        Korrelationsmatrix als DataFrame.
+        Korrelationsmatrix als DataFrame (z. B. Ergebnis von ``df.corr()``).
     save_path:
         Optionaler Speicherpfad für die Grafik.
 
@@ -230,11 +221,7 @@ def plot_corr_heatmap(corr, save_path: str | None = None) -> None:
 
 def plot_mcg_by_region(df, save_path: str | None = None) -> None:
     """
-    Visualisiert die Blitzintensität nach Region mittels Boxplots.
-
-    Die Darstellung erlaubt einen Vergleich der Verteilung von ``mcg``
-    zwischen Regionen und macht Unterschiede in Median, Streuung
-    und Ausreißern sichtbar.
+    Visualisiert die Verteilung von ``mcg`` nach Region mittels Boxplots.
 
     Parameter
     ---------
@@ -249,7 +236,7 @@ def plot_mcg_by_region(df, save_path: str | None = None) -> None:
     """
     plt.figure(figsize=(10, 5))
     sns.boxplot(x="region", y="mcg", data=df)
-    plt.title("Lightning intensity (mcg) by region")
+    plt.title("mcg by region")
     plt.xlabel("Region")
     plt.ylabel("mcg")
     _save_or_show(save_path)

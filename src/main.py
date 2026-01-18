@@ -25,7 +25,6 @@ def main() -> None:
     """
     file_path = "resource/lightning_strikes.csv"
 
-    # Toggle behavior
     SHOW_PLOTS = True
     SAVE_PLOTS = True
 
@@ -48,7 +47,7 @@ def main() -> None:
     print("\n--- CORRELATION MATRIX ---")
     print(corr)
 
-    print("\n--- TOP CORRELATIONS WITH mcg (by |corr|) ---")
+    print("\n--- TOP CORRELATIONS WITH mcg (quality metric, by |corr|) ---")
     print(top_correlations(corr, target="mcg", n=5))
 
     corr.to_csv("output/correlation_matrix.csv")

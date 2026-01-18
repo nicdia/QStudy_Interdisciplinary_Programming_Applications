@@ -49,18 +49,18 @@ flowchart TD
 
     subgraph ANALYSIS["Explorative Datenanalyse"]
         L[Korrelationsmatrix berechnen]
-        M[Top-Korrelationen mit mcg]
+        M[Top-Korrelationen mit MCG - Ortungsqualitaet]
         N[Korrelationsmatrix exportieren]
     end
 
     subgraph VIS["Visualisierung"]
         O{Plots anzeigen}
-        O --> O1[Balkendiagramm: Blitzeinschläge pro Region]
-        O --> O2[Liniendiagramm: Blitzeinschläge nach Tagesstunde]
+        O --> O1[Balkendiagramm: Anzahl Blitze pro Region]
+        O --> O2[Liniendiagramm: Anzahl Blitze nach Tagesstunde]
         O --> O3[Karte: Geografische Verteilung der Blitze]
-        O --> O4[Histogramm: Verteilung der Blitzintensität mcg]
+        O --> O4[Histogramm: Verteilung MCG - Ortungsqualitaet]
         O --> O5[Heatmap: Korrelationsmatrix]
-        O --> O6[Boxplot: Blitzintensität mcg nach Region]
+        O --> O6[Boxplot: MCG - Ortungsqualitaet nach Region]
     end
 
     P[Clean Dataset exportieren]
@@ -107,9 +107,10 @@ Der Standardlauf:
 - lädt die CSV-Datei,
 - bereinigt/standardisiert die Spalten,
 - erzeugt Zeitfeatures,
-- führt Korrelationen und eine lineare Regression durch,
+- berechnet eine Korrelationsmatrix und eine Rangliste der stärksten Korrelationen zu ``mcg``,
 - exportiert bereinigte Daten sowie Analyse-Ergebnisse,
 - speichert Visualisierungen in `output/figures/` (konfigurierbar in `main.py`).
+
 
 ## Output
 
@@ -117,7 +118,6 @@ Beim Standardlauf werden u. a. erzeugt:
 
 - `output/lightning_strikes_clean.csv`
 - `output/correlation_matrix.csv`
-- `output/regression_coefficients.csv`
 - `output/figures/*.png`
 
 ## KI-Deklaration
