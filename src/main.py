@@ -11,8 +11,8 @@ from analysis import (
 from viz import (
     plot_strikes_per_region,
     plot_strikes_by_hour,
-    plot_geo_intensity_map,
-    plot_intensity_hist,
+    plot_geo_map,
+    plot_mcg_hist,
     plot_corr_heatmap,
     plot_mcg_by_region,
 )
@@ -58,16 +58,16 @@ def main() -> None:
     if SHOW_PLOTS:
         plot_strikes_per_region(df)
         plot_strikes_by_hour(df)
-        plot_geo_intensity_map(df)
-        plot_intensity_hist(df)
+        plot_geo_map(df)
+        plot_mcg_hist(df)
         plot_corr_heatmap(corr)
         plot_mcg_by_region(df)
 
     if SAVE_PLOTS:
         plot_strikes_per_region(df, "output/figures/region_bar.png")
         plot_strikes_by_hour(df, "output/figures/hour_line.png")
-        plot_geo_intensity_map(df, "output/figures/geo_intensity_map.png")
-        plot_intensity_hist(df, "output/figures/mcg_hist.png")
+        plot_geo_map(df, "output/figures/geo_map.png")
+        plot_mcg_hist(df, "output/figures/mcg_hist.png")
         plot_corr_heatmap(corr, "output/figures/corr_heatmap.png")
         plot_mcg_by_region(df, "output/figures/mcg_by_region_box.png")
 

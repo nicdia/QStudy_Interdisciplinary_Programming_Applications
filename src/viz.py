@@ -91,7 +91,7 @@ def plot_strikes_by_hour(df, save_path: str | None = None) -> None:
     _save_or_show(save_path)
 
 
-def plot_geo_intensity_map(
+def plot_geo_map(
     df,
     save_path: str | None = None,
     *,
@@ -172,7 +172,7 @@ def plot_geo_intensity_map(
     _save_or_show(save_path)
 
 
-def plot_intensity_hist(df, save_path: str | None = None) -> None:
+def plot_mcg_hist(df, save_path: str | None = None) -> None:
     """
     Visualisiert die Verteilung von ``mcg`` als Histogramm.
 
